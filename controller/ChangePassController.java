@@ -26,7 +26,6 @@ public class ChangePassController implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		String username = savepass.getUsername();
-
 		try {
 			usermanager.LoadUser("src/data/user.txt");
 		} catch (IOException e1) {
@@ -34,6 +33,14 @@ public class ChangePassController implements ActionListener {
 			e1.printStackTrace();
 		}
 		String getAction = e.getActionCommand();
+		if (getAction.equals("hiển thị mật khẩu")) {
+			if (change.statusHienThiMatKhau()) {
+				change.hienThiMatKhau();
+			} else {
+				change.KhongHienThiMatKhau();
+			}
+		}
+
 		if (getAction.equals("Thoát")) {
 			change.dispose();
 		} else if (getAction.equals("Xác nhận")) {
@@ -71,6 +78,7 @@ public class ChangePassController implements ActionListener {
 				}
 			}
 		}
+
 	}
 
 }

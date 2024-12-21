@@ -10,6 +10,21 @@ public class SavePass {
 
 	}
 
+	public void putAccountAdmin() {
+		this.prefs.put("adminUser", "admin");
+		this.prefs.put("adminPass", "admin");
+	}
+
+	// Truy xuất thông tin username
+	public String getAdminUser() {
+		return prefs.get("adminUser", "");
+	}
+
+	// Truy xuất thông tin password
+	public String getAdminPass() {
+		return prefs.get("adminPass", "");
+	}
+
 	public void save(String username, String password) {
 		prefs.put("username", username);
 		prefs.put("password", password);
@@ -44,6 +59,22 @@ public class SavePass {
 
 	public void saveCheckboxState(String key, boolean value) {
 		prefs.putBoolean(key, value); // Lưu giá trị boolean vào Preferences
+	}
+
+	public void saveFlightCode(String a) {
+		prefs.put("FlightCode", a);
+	}
+
+	public String getFlightCode(String a) {
+		return prefs.get("FlightCode", "");
+	}
+
+	public void removeFlightCode(String a) {
+		prefs.remove("FlightCode");
+	}
+
+	public boolean checkAccess(String user) {
+		return (this.getUsername().equals(user));
 	}
 
 }

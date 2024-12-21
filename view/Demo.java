@@ -21,6 +21,8 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -36,6 +38,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -43,17 +46,21 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 import com.toedter.calendar.JDateChooser;
 
+import controller.MenuController;
 import controller.demoController;
 import model.SavePass;
 import model.Ticket;
 import model.TicketCheck;
 import model.TicketManager;
+import model.UserManager;
+import model.saveInfomationUser;
 
 public class Demo extends JFrame {
 	private JTabbedPane tabbedPane;
@@ -61,29 +68,32 @@ public class Demo extends JFrame {
 	private JMenu managerMenu, helpMenu;
 	private ImageIcon icon, iconhelp, iconReload, iconsearch1, iconlabel2, iconlabel1, iconlabel3;
 	private JToolBar toolBar;
-	private JButton button1, button2, button3, button4, button5, buttonContinue, seach1, search2;
+	public JButton button1, button2, button3, button4, button5;
+	public JButton buttonContinue;
+	public JButton seach1, search2, refreshButton;
 	private JLabel label;
 	private Timer timer;
 	private int colorIndex = 0;
 	private TicketManager manager = new TicketManager();
 	private JPanel panelTabel;
-	private JTable table;
-	private JComboBox comboBox1, comboBox2, genderComboBox;
-	private JDateChooser dateChooser;
-	private JButton refreshButton;
-	private JButton selectedButton = null;
+	public JTable table;
+	public JComboBox comboBox1, comboBox2, genderComboBox;
+	public JDateChooser dateChooser;
 	int stt;
 	private DefaultTableModel model;
-	private Color[] colors = { Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN, Color.BLUE,
-			Color.MAGENTA };
 	private JTextField cccdField, customerNameField, phoneField, emailField, usernameField;
 	private JPanel buttonPanel;
 	private JButton repairButton, saveButton, changePass;
 	private JPasswordField passwordfield;
 	private JButton startButton;
 	private demoController handle;
+	private MenuController mController;
 	private LoginForm login;
 	private SavePass savepass = new SavePass(LoginForm.class);
+	public JMenuItem helpItem, feedbackItem;
+	private UserManager usermanage = new UserManager();
+	private boolean checkID;
+	private saveInfomationUser info = new saveInfomationUser();
 
 	public Demo() {
 		setTitle("Hệ Thống đặt vé máy bay");
@@ -94,6 +104,7 @@ public class Demo extends JFrame {
 		menuBar = new JMenuBar();
 
 		handle = new demoController(this);
+		mController = new MenuController(this);
 		managerMenu = new JMenu("Manager");
 		icon = new ImageIcon(Demo.class.getResource("/img/Settings-icon.png"));
 		managerMenu.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH)));
@@ -101,10 +112,19 @@ public class Demo extends JFrame {
 		helpMenu = new JMenu("Help");
 		iconhelp = new ImageIcon(Demo.class.getResource("/img/Question-icon.png"));
 		helpMenu.setIcon(new ImageIcon(iconhelp.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH)));
+		helpItem = new JMenuItem("Hỗ trợ");
+		helpItem.addActionListener(mController);
+		helpItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK));
 
+		feedbackItem = new JMenuItem("Phản hồi");
+		feedbackItem.addActionListener(mController);
+		feedbackItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK));
+
+		helpMenu.add(helpItem);
+		helpMenu.add(feedbackItem);
 		menuBar.add(managerMenu);
 		menuBar.add(helpMenu);
-		this.setJMenuBar(menuBar);
+		setJMenuBar(menuBar);
 
 		// Tạo JToolBar chứa các JButton
 		toolBar = new JToolBar();
@@ -138,158 +158,9 @@ public class Demo extends JFrame {
 		this.setVisible(true);
 	}
 
-//	public class XuLyButton implements ActionListener {
-//
-//		@Override
-//		public void actionPerformed(ActionEvent e) {
-//			// TODO Auto-generated method stub
-//
-//			// Đổi màu cho nút được nhấn
-//			JButton clickedButton = (JButton) e.getSource();
-//			if (clickedButton == button1 || clickedButton == button2 || clickedButton == button3
-//					|| clickedButton == button4 || clickedButton == startButton) {
-//				resetButtonColors();
-//				clickedButton.setBackground(Color.lightGray);
-//				clickedButton.setForeground(Color.WHITE);
-//
-//			}
-//
-//			// Gọi phương thức cập nhật tab
-//			if (clickedButton == button1) {
-//				updateTab("Trang chủ", home());
-//			} else if (clickedButton == button2 || clickedButton == startButton) {
-//				updateTab("Đặt vé", tickets());
-//			} else if (clickedButton == button3) {
-//				updateTab("Vé của tôi", myTickets());
-//			} else if (clickedButton == button4) {
-//				updateTab("Thông tin", proFile());
-//			} else if (clickedButton == button5) {
-//				int confirmResult = JOptionPane.showConfirmDialog(Demo.this, "Bạn có có muốn đăng xuất?", "Xác nhận",
-//						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-//
-//				if (confirmResult == JOptionPane.YES_OPTION) {
-//					new LoginForm();
-//					setVisible(false);
-//				}
-//
-//			} else if (clickedButton == buttonContinue) {
-//				int selectedRow = table.getSelectedRow();
-//
-//				if (selectedRow != -1) {
-//					String flightCode = (String) table.getValueAt(selectedRow, 0);
-//					String flightDate = (String) table.getValueAt(selectedRow, 1);
-//					String flightTime = (String) table.getValueAt(selectedRow, 2);
-//					String departureAirport = (String) table.getValueAt(selectedRow, 3);
-//					String arrivalAirport = (String) table.getValueAt(selectedRow, 4);
-//					FlightConfirmationForm confirmationForm = new FlightConfirmationForm();
-//					confirmationForm.setFlightDetails(flightCode, flightDate, flightTime, departureAirport,
-//							arrivalAirport);
-//
-//				} else {
-//					JOptionPane.showMessageDialog(null, "Vui lòng chọn một chuyến bay!");
-//				}
-//			} else if (clickedButton == seach1) {
-//				String departure = (String) comboBox1.getSelectedItem();
-//				String arrival = (String) comboBox2.getSelectedItem();
-//				filterTickets(departure, arrival);
-//			} else if (clickedButton == search2) {
-//				String departure = (String) comboBox1.getSelectedItem();
-//				String arrival = (String) comboBox2.getSelectedItem();
-//				Date selectedDate = dateChooser.getDate();
-//
-//				if (selectedDate == null) {
-//					JOptionPane.showMessageDialog(null, "Vui lòng chọn một ngày để tìm kiếm!");
-//					return;
-//				}
-//
-//				SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//				String selectedDateString = dateFormat.format(selectedDate);
-//				System.out.println(selectedDateString);
-//
-//				DefaultTableModel model = (DefaultTableModel) table.getModel();
-//				model.setRowCount(0);
-//
-//				boolean hasResults = false;
-//
-//				boolean isAllDeparture = departure.equals("All");
-//				boolean isAllArrival = arrival.equals("All");
-//
-//				for (Ticket ticket : manager.ticketList) {
-//					String flightDate = ticket.getFlightDate();
-//					String departureAirport = ticket.getDepartureAirport();
-//					String arrivalAirport = ticket.getArrivalAirport();
-//
-//					// Kiểm tra điều kiện tìm kiếm
-//					boolean dateMatch = selectedDateString.equals(flightDate);
-//					boolean departureMatch = isAllDeparture || departure.equals(departureAirport);
-//					boolean arrivalMatch = isAllArrival || arrival.equals(arrivalAirport);
-//
-//					// Trường hợp 1: Chỉ tìm theo ngày
-//					boolean onlyDateSearch = !isAllDeparture && !isAllArrival && departure.isEmpty()
-//							&& arrival.isEmpty();
-//
-//					// Trường hợp 2: Tìm theo ngày và địa điểm
-//					boolean dateAndLocationSearch = !departure.isEmpty() || !arrival.isEmpty();
-//
-//					if (onlyDateSearch && dateMatch) {
-//						addTicketToTable(model, ticket);
-//						hasResults = true;
-//					} else if (dateAndLocationSearch) {
-//						if (dateMatch && departureMatch && arrivalMatch) {
-//							addTicketToTable(model, ticket);
-//							hasResults = true;
-//						}
-//					}
-//				}
-//
-//				if (!hasResults) {
-//					JOptionPane.showMessageDialog(null, "Không có chuyến bay nào phù hợp với tiêu chí tìm kiếm.");
-//				}
-//			} else if (clickedButton == refreshButton) {
-//				comboBox1.setSelectedIndex(0);
-//				comboBox2.setSelectedIndex(0);
-//
-//				dateChooser.setDate(null);
-//
-//				DefaultTableModel model = (DefaultTableModel) table.getModel();
-//				model.setRowCount(0);
-//
-//				for (Ticket ticket : manager.ticketList) {
-//					model.addRow(new Object[] { ticket.getFlightCode(), ticket.getFlightDate(), ticket.getFlightTime(),
-//							ticket.getDepartureAirport(), ticket.getArrivalAirport() });
-//				}
-//			} else if (clickedButton == repairButton) {
-//
-//				cccdField.setEditable(true);
-//				customerNameField.setEditable(true);
-//				phoneField.setEditable(true);
-//				emailField.setEditable(true);
-//				usernameField.setEditable(true);
-//				passwordfield.setEditable(true);
-//				genderComboBox.setEnabled(true);
-//			} else if (clickedButton == saveButton) {
-//				int confirmResult = JOptionPane.showConfirmDialog(Demo.this, "Bạn có có muốn lưu lại các thông tin?",
-//						"Xác nhận", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-//
-//				if (confirmResult == JOptionPane.YES_OPTION) {
-//
-//					cccdField.setEditable(false);
-//					customerNameField.setEditable(false);
-//					phoneField.setEditable(false);
-//					emailField.setEditable(false);
-//					usernameField.setEditable(false);
-//					passwordfield.setEditable(false);
-//					genderComboBox.setEnabled(false);
-//				}
-//			}
-//
-//		}
-//
-//	}
-
 	public void resetButtonColors() {
 		for (JButton button : new JButton[] { button1, button2, button3, button4 }) {
-			if (button != selectedButton) {
+			if (button != null) {
 				button.setBackground(null);
 				button.setForeground(Color.BLACK);
 			}
@@ -374,28 +245,23 @@ public class Demo extends JFrame {
 		welcomeLabel.setForeground(new Color(51, 51, 51));
 		welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		// Tên hệ thống với hiệu ứng đổ bóng
 		JLabel systemLabel = new JLabel("HỆ THỐNG ĐẶT VÉ MÁY BAY") {
 			private float alpha = 1.0f;
 			private boolean increasing = false;
 			private int colorIndex = 0;
 
-			// Mảng màu sắc đẹp
 			private Color[] colors = { new Color(25, 118, 210), new Color(220, 20, 60), new Color(255, 165, 0),
 					new Color(106, 90, 205), new Color(50, 205, 50), new Color(255, 20, 147), new Color(255, 215, 0) };
 
 			{
-				// Timer cho hiệu ứng nhấp nháy và đổi màu
 				Timer timer = new Timer(100, new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						// Xử lý alpha cho hiệu ứng fade
 						if (increasing) {
 							alpha += 0.1f;
 							if (alpha >= 1.0f) {
 								alpha = 1.0f;
 								increasing = false;
-								// Đổi màu khi đạt độ sáng tối đa
 								colorIndex = (colorIndex + 1) % colors.length;
 							}
 						} else {
@@ -417,11 +283,9 @@ public class Demo extends JFrame {
 				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 				g2d.setFont(new Font("Arial", Font.BOLD, 42));
 
-				// Lấy màu hiện tại và màu tiếp theo để tạo gradient
 				Color currentColor = colors[colorIndex];
 				Color nextColor = colors[(colorIndex + 1) % colors.length];
 
-				// Vẽ đổ bóng
 				g2d.setColor(new Color(0, 0, 0, (int) (50 * alpha)));
 				g2d.drawString(getText(), 2, getHeight() - 2);
 
@@ -454,7 +318,6 @@ public class Demo extends JFrame {
 		};
 		systemLabel.setFont(new Font("Arial", Font.BOLD, 42));
 		systemLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		// Đảm bảo label đủ lớn để chứa text và hiệu ứng
 		systemLabel.setPreferredSize(new Dimension(600, 60));
 
 		// Slogan
@@ -498,7 +361,6 @@ public class Demo extends JFrame {
 		startButton.setMaximumSize(new Dimension(250, 50));
 		startButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-		// Thêm các thành phần vào panel trung tâm với padding
 		centerPanel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
 		centerPanel.add(logoLabel);
 		centerPanel.add(Box.createVerticalStrut(30));
@@ -510,7 +372,6 @@ public class Demo extends JFrame {
 		centerPanel.add(Box.createVerticalStrut(40));
 		centerPanel.add(startButton);
 
-		// Thêm panel trung tâm vào panel chính với margin
 		mainPanel.add(Box.createHorizontalStrut(100), BorderLayout.WEST);
 		mainPanel.add(Box.createHorizontalStrut(100), BorderLayout.EAST);
 		mainPanel.add(Box.createVerticalStrut(50), BorderLayout.NORTH);
@@ -621,10 +482,10 @@ public class Demo extends JFrame {
 			tableModel.addColumn(columnName);
 		}
 		tableModel.setRowCount(0);
-//		for (Ticket ticket : manager.ticketList) {
-//			tableModel.addRow(new Object[] { ticket.getFlightCode(), ticket.getFlightDate(), ticket.getFlightTime(),
-//					ticket.getDepartureAirport(), ticket.getArrivalAirport() });
-//		}
+		for (Ticket ticket : manager.ticketList) {
+			tableModel.addRow(new Object[] { ticket.getFlightCode(), ticket.getFlightDate(), ticket.getFlightTime(),
+					ticket.getDepartureAirport(), ticket.getArrivalAirport() });
+		}
 
 		// Style table
 		table = new JTable(tableModel);
@@ -649,7 +510,7 @@ public class Demo extends JFrame {
 		footerPanel.setBackground(new Color(245, 247, 250));
 		footerPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
 
-		buttonContinue = createStyledButton("Đặt vé", null, new Dimension(150, 45));
+		buttonContinue = createStyledButton("Xác nhận vé", null, new Dimension(150, 45));
 		buttonContinue.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		buttonContinue.addActionListener(handle);
 		footerPanel.add(buttonContinue);
@@ -693,12 +554,11 @@ public class Demo extends JFrame {
 		paddedTitlePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 		paddedTitlePanel.add(headerLabel, BorderLayout.CENTER);
 
-		// Center Panel với Table
 		JPanel panelCenter = new JPanel();
 		model = new DefaultTableModel() {
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				return false; // Không cho phép edit cells
+				return false;
 			}
 		};
 
@@ -710,7 +570,7 @@ public class Demo extends JFrame {
 		table.setSelectionBackground(new Color(232, 237, 242));
 
 		// Thêm các cột
-		String[] columnNames = { "STT", "Mã chuyến bay", "Họ và tên", "CCDD", "SĐT", "Ngày Bay", "Thời gian bay",
+		String[] columnNames = { "STT", "Mã vé bay", "Họ và tên", "CCDD", "SĐT", "Ngày Bay", "Thời gian bay",
 				"Sân bay đi", "Sân bay đến", "Số ghế", "Thuế", "giá vé", "Tổng tiền" };
 		for (String columnName : columnNames) {
 			model.addColumn(columnName);
@@ -718,27 +578,29 @@ public class Demo extends JFrame {
 		List<TicketCheck> allTickets = TicketManager.getInstance().getAllTickets();
 		model.setRowCount(0);
 		int stt = 1;
-//		for (TicketCheck ticket : allTickets) {
-//			Object[] rowData = { stt++, ticket.generateFlightCode(), ticket.getPassengerName(), ticket.getId(),
-//					ticket.getPhone(), ticket.getDate(), ticket.getTime(), ticket.getDeparture(), ticket.getArrival(),
-//					ticket.getSelectedSeats(), ticket.getTax(), ticket.getPrice(), ticket.getTotal() };
-//			model.addRow(rowData);
-//		}
+		String getFlightCode = savepass.getFlightCode("FlightCode");
+		for (TicketCheck ticket : allTickets) {
+			Object[] rowData = { stt++, getFlightCode, ticket.getPassengerName(), ticket.getId(), ticket.getPhone(),
+					ticket.getDate(), ticket.getTime(), ticket.getDeparture(), ticket.getArrival(),
+					ticket.getSelectedSeats(), ticket.getTax(), ticket.getPrice(), ticket.getTotal() };
+			model.addRow(rowData);
+			getFlightCode = "";
+		}
 
 		// Thiết lập độ rộng cho các cột
-		table.getColumnModel().getColumn(0).setPreferredWidth(40); // STT
-		table.getColumnModel().getColumn(1).setPreferredWidth(100); // Mã chuyến bay
-		table.getColumnModel().getColumn(2).setPreferredWidth(150); // Họ và tên
-		table.getColumnModel().getColumn(3).setPreferredWidth(100); // CCCD
-		table.getColumnModel().getColumn(4).setPreferredWidth(100); // SĐT
-		table.getColumnModel().getColumn(5).setPreferredWidth(80); // Ngày bay
-		table.getColumnModel().getColumn(6).setPreferredWidth(100); // Thời gian bay
-		table.getColumnModel().getColumn(7).setPreferredWidth(80); // Sân bay đi
-		table.getColumnModel().getColumn(8).setPreferredWidth(80); // Sân bay đến
-		table.getColumnModel().getColumn(9).setPreferredWidth(50); // Số ghế
-		table.getColumnModel().getColumn(10).setPreferredWidth(80); // Thuế
-		table.getColumnModel().getColumn(10).setPreferredWidth(100); // giá vé
-		table.getColumnModel().getColumn(10).setPreferredWidth(100); // tổng tiền
+		table.getColumnModel().getColumn(0).setPreferredWidth(40);
+		table.getColumnModel().getColumn(1).setPreferredWidth(60);
+		table.getColumnModel().getColumn(2).setPreferredWidth(150);
+		table.getColumnModel().getColumn(3).setPreferredWidth(100);
+		table.getColumnModel().getColumn(4).setPreferredWidth(100);
+		table.getColumnModel().getColumn(5).setPreferredWidth(80);
+		table.getColumnModel().getColumn(6).setPreferredWidth(100);
+		table.getColumnModel().getColumn(7).setPreferredWidth(80);
+		table.getColumnModel().getColumn(8).setPreferredWidth(80);
+		table.getColumnModel().getColumn(9).setPreferredWidth(50);
+		table.getColumnModel().getColumn(10).setPreferredWidth(80);
+		table.getColumnModel().getColumn(10).setPreferredWidth(100);
+		table.getColumnModel().getColumn(10).setPreferredWidth(100);
 
 		// Tạo scroll pane với custom border
 		JScrollPane sc = new JScrollPane(table);
@@ -952,20 +814,20 @@ public class Demo extends JFrame {
 	public void filterTickets(String departure, String arrival) {
 		DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
 		tableModel.setRowCount(0);
-//		for (Ticket ticket : manager.ticketList) {
-//			boolean matches = true;
-//
-//			if (!departure.equals("All") && !ticket.getDepartureAirport().equals(departure)) {
-//				matches = false;
-//			}
-//			if (!arrival.equals("All") && !ticket.getArrivalAirport().equals(arrival)) {
-//				matches = false;
-//			}
-//			if (matches) {
-//				tableModel.addRow(new Object[] { ticket.getFlightCode(), ticket.getFlightDate(), ticket.getFlightTime(),
-//						ticket.getDepartureAirport(), ticket.getArrivalAirport() });
-//			}
-//		}
+		for (Ticket ticket : manager.ticketList) {
+			boolean matches = true;
+
+			if (!departure.equals("All") && !ticket.getDepartureAirport().equals(departure)) {
+				matches = false;
+			}
+			if (!arrival.equals("All") && !ticket.getArrivalAirport().equals(arrival)) {
+				matches = false;
+			}
+			if (matches) {
+				tableModel.addRow(new Object[] { ticket.getFlightCode(), ticket.getFlightDate(), ticket.getFlightTime(),
+						ticket.getDepartureAirport(), ticket.getArrivalAirport() });
+			}
+		}
 	}
 
 	public ImageIcon loadIcon(String path, int width, int height) {
@@ -1016,7 +878,6 @@ public class Demo extends JFrame {
 		button.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
 		button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-		// Add hover effect
 		button.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent e) {
 				button.setBackground(new Color(52, 152, 219));
@@ -1028,6 +889,10 @@ public class Demo extends JFrame {
 		});
 
 		return button;
+	}
+
+	public boolean getCheckFormProfile() {
+		return savepass.getCheckboxState("ProfileCheck", false);
 	}
 
 	public JComboBox<String> createStyledComboBox(String[] items) {
@@ -1045,12 +910,13 @@ public class Demo extends JFrame {
 	}
 
 	public void setEditFalse() {
+
 		cccdField.setEditable(false);
 		phoneField.setEditable(false);
 		customerNameField.setEditable(false);
 		emailField.setEditable(false);
 		genderComboBox.setEnabled(false);
-
+		repaint();
 	}
 
 	public void setEditTrue() {
@@ -1059,6 +925,50 @@ public class Demo extends JFrame {
 		customerNameField.setEditable(true);
 		emailField.setEditable(true);
 		genderComboBox.setEnabled(true);
+		repaint();
+	}
+
+	public String getId() {
+		String id = cccdField.getText();
+		return id;
+
+	}
+
+	public String getPhone() {
+		String phone = phoneField.getText();
+		return phone;
+
+	}
+
+	public String getName() {
+		String name = customerNameField.getText();
+		return name;
+
+	}
+
+	public String getEmail() {
+		String email = emailField.getText();
+		return email;
+
+	}
+
+	public String getGender() {
+		String gender = (String) genderComboBox.getSelectedItem();
+		return gender;
+
+	}
+
+	public void putInfo(saveInfomationUser a) {
+		if (cccdField != null && customerNameField != null && phoneField != null && emailField != null
+				&& genderComboBox != null) {
+			cccdField.setText(a.getId());
+			customerNameField.setText(a.getName());
+			phoneField.setText(a.getPhone());
+			emailField.setText(a.getEmail());
+			genderComboBox.setSelectedItem(a.getGender());
+		} else {
+			System.err.println("Một hoặc nhiều thành phần giao diện chưa được khởi tạo.");
+		}
 	}
 
 }

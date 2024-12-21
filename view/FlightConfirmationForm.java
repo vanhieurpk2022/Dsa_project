@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +23,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import model.SavePass;
 import model.SeatSelector;
 import model.Ticket;
 import model.TicketCheck;
 import model.TicketManager;
+import model.saveInfomationUser;
 
 public class FlightConfirmationForm extends JFrame {
 	private final List<Integer> selectedSeatsList = new ArrayList<>();
@@ -38,12 +41,14 @@ public class FlightConfirmationForm extends JFrame {
 	private JTextField totalField;
 	private double thue = 0.08;
 	private double priceT = 1000000;
+	private TicketManager ticketManager = new TicketManager();
 
 	public FlightConfirmationForm() {
 		// Set up the frame
 		setTitle("Xác Nhận");
 		setSize(800, 500);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setResizable(false);
 		setLocationRelativeTo(null);
 
 		// Main panel
@@ -186,10 +191,17 @@ public class FlightConfirmationForm extends JFrame {
 	}
 
 	public class XuLyButton implements ActionListener {
+		SavePass savepass = new SavePass(LoginForm.class);
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			try {
+				ticketManager.loadTicketCheck();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 
 			// Đổi màu cho nút được nhấn
 			JButton clickedButton = (JButton) e.getSource();
@@ -224,6 +236,17 @@ public class FlightConfirmationForm extends JFrame {
 				if (confirmResult == JOptionPane.YES_OPTION) {
 					TicketCheck newTicket = new TicketCheck(departure, arrival, name, date, time, price, tax, total, id,
 							phone, selectedSeats);
+					if (ticketManager.getsaveInfomation(savepass.getUsername()) == null) {
+						saveInfomationUser save = new saveInfomationUser(savepass.getUsername(), savepass.getPassword(),
+								id, name, phone, " ", " ");
+						ticketManager.addUserInf(save);
+						try {
+							ticketManager.writeTicketCheck();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
 
 					TicketManager.getInstance().addTicket(newTicket);
 
@@ -325,6 +348,27 @@ public class FlightConfirmationForm extends JFrame {
 		return 0;
 	}
 
+	public void setInfomationUser(String id, String name, String phone) {
+		idField.setText(id);
+		nameField.setText(name);
+		phoneField.setText(phone);
+		idField.setEditable(false);
+		nameField.setEditable(false);
+		phoneField.setEditable(false);
+	}
+
+	public String getIdCccd() {
+		return idField.getText();
+	}
+
+	public String getNameGuest() {
+		return nameField.getText();
+	}
+
+	public String getPhoneGuest() {
+		return phoneField.getText();
+	}
+
 	// Modify setFlightDetails to update price
 	public void setFlightDetails(String flightCode, String flightDate, String flightTime, String departureAirport,
 			String arrivalAirport) {
@@ -332,8 +376,14 @@ public class FlightConfirmationForm extends JFrame {
 		arrivalField.setText(arrivalAirport);
 		dateField.setText(flightDate);
 		timeField.setText(flightTime);
-
 		updatePriceAfterSeatSelection();
+		departureField.setEditable(false);
+		arrivalField.setEditable(false);
+		dateField.setEditable(false);
+		timeField.setEditable(false);
+		priceField.setEditable(false);
+		taxField.setEditable(false);
+		totalField.setEditable(false);
 	}
 
 	// <===>

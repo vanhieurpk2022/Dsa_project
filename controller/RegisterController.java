@@ -52,7 +52,7 @@ public class RegisterController implements ActionListener {
 					JOptionPane.ERROR_MESSAGE);
 		} else {
 			try {
-				userManager.LoadUser("src/data/user.txt");
+				userManager.LoadUser("/data/user.txt");
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -63,7 +63,7 @@ public class RegisterController implements ActionListener {
 				JOptionPane.showMessageDialog(null, "Đăng ký thành công!", "Thông báo",
 						JOptionPane.INFORMATION_MESSAGE);
 				try {
-					userManager.WriteUser("src/data/user.txt");
+					userManager.WriteUser("/data/user.txt");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

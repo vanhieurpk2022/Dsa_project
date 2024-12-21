@@ -1,8 +1,12 @@
 package view;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.util.List;
+
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class SeatDisplayComponent extends JPanel {
 	private static final int THRESHOLD_FOR_COMBOBOX = 2;
@@ -24,7 +28,6 @@ public class SeatDisplayComponent extends JPanel {
 	public void updateDisplay(List<Integer> selectedSeats) {
 		removeAll();
 
-	
 		if (selectedSeats.isEmpty()) {
 			selectedSeatsField.setText("Chưa chọn ghế");
 		} else {
@@ -46,4 +49,5 @@ public class SeatDisplayComponent extends JPanel {
 	public String getSelectedSeat() {
 		return selectedSeatsField.getText();
 	}
+
 }

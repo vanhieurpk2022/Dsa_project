@@ -24,6 +24,7 @@ public class ChangePassword extends JFrame {
 	private Demo demo;
 	private ActionListener changeController;
 	private SavePass savepass = new SavePass(LoginForm.class);
+	private JCheckBox chckbxHinThMt;
 
 	public ChangePassword() {
 
@@ -84,9 +85,10 @@ public class ChangePassword extends JFrame {
 		panel_ChangePass_Label.add(textField_xacNhanMatKhau);
 		textField_xacNhanMatKhau.setColumns(10);
 
-		JCheckBox chckbxHinThMt = new JCheckBox("hiển thị mật khẩu");
+		chckbxHinThMt = new JCheckBox("hiển thị mật khẩu");
 		chckbxHinThMt.setBounds(125, 103, 129, 23);
 		panel_ChangePass_Label.add(chckbxHinThMt);
+		chckbxHinThMt.addActionListener(changeController);
 
 		JPanel panel_ChangePass_button = new JPanel();
 		panel_ChangePass_button.setBounds(45, 199, 359, 38);
@@ -143,4 +145,21 @@ public class ChangePassword extends JFrame {
 	public String getNewPassword() {
 		return getMatKhauMoi();
 	}
+
+	public boolean statusHienThiMatKhau() {
+		return chckbxHinThMt.isSelected();
+	}
+
+	public void hienThiMatKhau() {
+		textField_matKhauMoi.setEchoChar((char) 0);
+		textField_xacNhanMatKhau.setEchoChar((char) 0);
+		repaint();
+	}
+
+	public void KhongHienThiMatKhau() {
+		textField_matKhauMoi.setEchoChar('*');
+		textField_xacNhanMatKhau.setEchoChar('*');
+		repaint();
+	}
+
 }

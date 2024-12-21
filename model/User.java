@@ -5,6 +5,11 @@ import java.util.Objects;
 public class User {
 	private String username;
 	private String password;
+	private String id;
+	private String guestName;
+	private String phoneNunber;
+	private String email;
+	private String gender;
 
 	public User(String username, String password) {
 		this.username = username;
@@ -30,6 +35,46 @@ public class User {
 	@Override
 	public int hashCode() {
 		return Objects.hash(username, password);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getGuestName() {
+		return guestName;
+	}
+
+	public void setGuestName(String guestName) {
+		this.guestName = guestName;
+	}
+
+	public String getPhoneNunber() {
+		return phoneNunber;
+	}
+
+	public void setPhoneNunber(String phoneNunber) {
+		this.phoneNunber = phoneNunber;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import model.UserManager;
 import view.Demo;
 import view.LoginForm;
 import view.RegistrationForm;
+import view.adminSetting;
 
 public class LoginController implements ActionListener {
 	LoginForm loginform;
@@ -21,7 +22,7 @@ public class LoginController implements ActionListener {
 
 	public LoginController(LoginForm loginform) {
 		this.loginform = loginform;
-
+		savepass.putAccountAdmin();
 	}
 
 	@Override
@@ -46,12 +47,13 @@ public class LoginController implements ActionListener {
 			} else { // không empty
 				try {
 
-					if (username.equals("admin") && password.equals("admin")) {
+					if (savepass.getAdminUser().equals(username) && savepass.getAdminPass().equals(password)) {
 						loginform.dispose();
-						new Demo();
+						new adminSetting();
 
-					} else if (userManager.isExits(username, password)) {
+					} else if (userManager.isExits(username, password)) { // đăng nhập thành công
 						loginform.dispose();
+						savepass.save(username, password);
 						new Demo();
 
 					} else {
@@ -74,12 +76,7 @@ public class LoginController implements ActionListener {
 		} else if (getAction.equals("Hủy")) {
 			System.exit(0);
 		}
-		if (loginform.getCheckBox()) {
-			savepass.save(username, password);
-			// TODO Auto-generated catch block
-		} else {
-			savepass.remove(username, password);
-		}
+
 	}
 
 }

@@ -5,9 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 public class UserManager {
@@ -29,7 +27,7 @@ public class UserManager {
 	}
 
 	public void LoadUser(String fileName) throws IOException {
-		Map<String, String> StoreUser = new LinkedHashMap<String, String>();
+
 		BufferedReader reader = new BufferedReader(new FileReader(fileName));
 		String str;
 		while ((str = reader.readLine()) != null) {
