@@ -195,9 +195,11 @@ public class FlightConfirmationForm extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+
 			// TODO Auto-generated method stub
 			try {
 				ticketManager.loadTicketCheck();
+				ticketManager.LoadMyTicket();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -234,22 +236,28 @@ public class FlightConfirmationForm extends JFrame {
 						"Bạn có chắc chắn muốn xác nhận thông tin này không?", "Xác nhận lần nữa",
 						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if (confirmResult == JOptionPane.YES_OPTION) {
-					TicketCheck newTicket = new TicketCheck(departure, arrival, name, date, time, price, tax, total, id,
-							phone, selectedSeats);
+					TicketCheck newTicket = new TicketCheck(savepass.getUsername(),
+							savepass.getFlightCode("FlightCode"), departure, arrival, name, date, time, price, tax,
+							total, id, phone, selectedSeats);
 					if (ticketManager.getsaveInfomation(savepass.getUsername()) == null) {
 						saveInfomationUser save = new saveInfomationUser(savepass.getUsername(), savepass.getPassword(),
 								id, name, phone, " ", " ");
 						ticketManager.addUserInf(save);
 						try {
-							ticketManager.writeTicketCheck();
+							ticketManager.writeInfomationUser();
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
 
-					TicketManager.getInstance().addTicket(newTicket);
-
+					ticketManager.addTicketCheck(newTicket);
+					try {
+						ticketManager.SaveMyTicket();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					JOptionPane.showMessageDialog(FlightConfirmationForm.this, "Đặt vé thành công!", "Confirmation",
 							JOptionPane.INFORMATION_MESSAGE);
 					FlightConfirmationForm.this.dispose();

@@ -27,7 +27,7 @@ public class ChangePassController implements ActionListener {
 		// TODO Auto-generated method stub
 		String username = savepass.getUsername();
 		try {
-			usermanager.LoadUser("src/data/user.txt");
+			usermanager.LoadUser();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -67,7 +67,7 @@ public class ChangePassController implements ActionListener {
 							JOptionPane.showMessageDialog(null, "Đổi mật khẩu thành công!", "Thông báo",
 									JOptionPane.INFORMATION_MESSAGE);
 							try {
-								usermanager.WriteUser("src/data/user.txt");
+								usermanager.WriteUser();
 							} catch (IOException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();

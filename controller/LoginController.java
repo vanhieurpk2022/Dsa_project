@@ -29,7 +29,7 @@ public class LoginController implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		try {
-			userManager.LoadUser("src/data/user.txt");
+			userManager.LoadUser();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -54,6 +54,7 @@ public class LoginController implements ActionListener {
 					} else if (userManager.isExits(username, password)) { // đăng nhập thành công
 						loginform.dispose();
 						savepass.save(username, password);
+
 						new Demo();
 
 					} else {

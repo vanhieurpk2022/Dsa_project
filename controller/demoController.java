@@ -71,6 +71,7 @@ public class demoController implements ActionListener {
 		} else if (getAction.equals("Đặt vé") || getAction.equals("BẮT ĐẦU ĐẶT VÉ")) {
 			demo.updateTab("Đặt vé", demo.tickets());
 		} else if (getAction.equals("Vé của tôi")) {
+
 			demo.updateTab("Vé của tôi", demo.myTickets());
 
 		} else if (getAction.equals("Thông tin")) {
@@ -94,6 +95,7 @@ public class demoController implements ActionListener {
 		} else if (getAction.equals("Trang chủ")) {
 			demo.updateTab("Trang chủ", demo.home());
 		} else if (jbutotn == demo.buttonContinue) {
+
 			int selectedRow = demo.table.getSelectedRow();
 
 			if (selectedRow != -1) {
@@ -118,6 +120,7 @@ public class demoController implements ActionListener {
 
 				confirmationForm.setFlightDetails(flightCode, flightDate, flightTime, departureAirport, arrivalAirport);
 				savepass.saveFlightCode(flightCode);
+
 			} else {
 				JOptionPane.showMessageDialog(null, "Vui lòng chọn một chuyến bay!");
 			}
@@ -207,7 +210,7 @@ public class demoController implements ActionListener {
 				manager.addUserInf(savm);
 			}
 			try {
-				manager.writeTicketCheck();
+				manager.writeInfomationUser();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

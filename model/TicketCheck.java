@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class TicketCheck {
@@ -15,10 +16,14 @@ public class TicketCheck {
 	private String id;
 	private String phone;
 	private String selectedSeats;
+	private String username;
 
 	// Constructor
-	public TicketCheck(String departure, String arrival, String passengerName, String date, String time, String price,
-			String tax, String total, String id, String phone, String selectedSeats) {
+	public TicketCheck(String username, String flightcode, String departure, String arrival, String passengerName,
+			String date, String time, String price, String tax, String total, String id, String phone,
+			String selectedSeats) {
+		this.username = username;
+		this.flightcode = flightcode;
 		this.departure = departure;
 		this.arrival = arrival;
 		this.passengerName = passengerName;
@@ -33,6 +38,27 @@ public class TicketCheck {
 	}
 
 	public TicketCheck() {
+	}
+
+	public String getUserName() {
+		return this.username;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		TicketCheck other = (TicketCheck) obj;
+		return Objects.equals(id, other.id);
 	}
 
 	public String getFlightcode() {
@@ -138,4 +164,9 @@ public class TicketCheck {
 		return "VN-" + number;
 	}
 
+	public String toString() {
+		return "\n" + this.username + "\t" + this.flightcode + "\t" + this.passengerName + "\t" + this.id + "\t"
+				+ this.phone + "\t" + this.date + "\t" + this.time + "\t" + this.departure + "\t" + this.arrival + "\t"
+				+ this.selectedSeats + "\t" + this.tax + "\t" + this.price + "\t" + this.total;
+	}
 }

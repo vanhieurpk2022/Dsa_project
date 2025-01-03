@@ -22,7 +22,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +59,10 @@ import com.toedter.calendar.JDateChooser;
 
 import controller.adminController;
 import model.Ticket;
+import model.TicketCheck;
 import model.TicketManager;
+import model.UserManager;
+import model.saveInfomationUser;
 
 public class adminSetting extends JFrame {
 	private JMenuBar menuBar;
@@ -83,7 +85,7 @@ public class adminSetting extends JFrame {
 	public Set<String> generatedCodes;
 	public DefaultTableModel tableModel;
 	public JTable table;
-	private TicketManager ticketmanage = new TicketManager();
+	private UserManager usermanager = new UserManager();
 
 	public adminSetting() {
 		// TODO Auto-generated constructor stub
@@ -160,26 +162,52 @@ public class adminSetting extends JFrame {
 		titleLabel.setForeground(new Color(33, 37, 41));
 		mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-		// Dữ liệu mẫu và tiêu đề cột
-		String[] columnNames = { "Mã chuyến bay", "Tên khách hàng", "Số CCCD", "Giới tính", "Điểm đi", "Điểm đến",
-				"Ngày bay", "SĐT", "Email" };
-		Object[][] data = {
-				{ "VN123", "Nguyễn Văn A", "123456789", "Nam", "Hà Nội", "TP. Hồ Chí Minh", "2024-12-20", "0123456789",
-						"a@gmail.com" },
-				{ "VN124", "Trần Thị B", "987654321", "Nữ", "Đà Nẵng", "Hà Nội", "2024-12-22", "0987654321",
-						"b@gmail.com" },
-				{ "VN125", "Trần Văn C", "111222333", "Nam", "Hải Phòng", "Cần Thơ", "2024-12-23", "0981122334",
-						"c@gmail.com" } };
+		// Thay đổi tiêu đề cột theo thuộc tính của TicketCheck
+		String[] columnNames = { "STT", "Mã chuyến bay", "Tên khách hàng", "CCCD", "SĐT", "Ngày bay", "Giờ bay",
+				"Điểm đi", "Điểm đến", "Số ghế", "Thuế", "Giá vé", "Tổng tiền" };
 
-		// Lưu dữ liệu gốc
-		originalData = new ArrayList<>();
-		for (Object[] row : data) {
-			originalData.add(row);
+		// Tạo model cho table
+		DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
+		try {
+			manager.LoadMyTicket();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// Lấy danh sách vé từ TicketManager
+		Set<TicketCheck> allTickets = manager.getMyTicket();
+		int stt = 1;
+
+		// Thêm dữ liệu từ TicketCheck vào model
+		for (TicketCheck ticket : allTickets) {
+			Object[] rowData = { stt++, ticket.getFlightcode(), ticket.getPassengerName(), ticket.getId(),
+					ticket.getPhone(), ticket.getDate(), ticket.getTime(), ticket.getDeparture(), ticket.getArrival(),
+					ticket.getSelectedSeats(), ticket.getTax(), ticket.getPrice(), ticket.getTotal() };
+			model.addRow(rowData);
 		}
 
-		DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
-		JTable ticketTable = new JTable(tableModel);
-		ticketTable.setRowHeight(25);
+		// Thiết lập độ rộng từng cột một cách rõ ràng và hợp lý
+
+		JTable ticketTable = new JTable(model);
+
+		ticketTable.getColumnModel().getColumn(0).setPreferredWidth(40); // STT
+		ticketTable.getColumnModel().getColumn(1).setPreferredWidth(130); // Flight Code
+		ticketTable.getColumnModel().getColumn(2).setPreferredWidth(130); // Passenger Name
+		ticketTable.getColumnModel().getColumn(3).setPreferredWidth(90); // Ticket ID
+		ticketTable.getColumnModel().getColumn(4).setPreferredWidth(90); // Phone
+		ticketTable.getColumnModel().getColumn(5).setPreferredWidth(80); // Date
+		ticketTable.getColumnModel().getColumn(6).setPreferredWidth(100); // Time
+		ticketTable.getColumnModel().getColumn(7).setPreferredWidth(80); // Departure
+		ticketTable.getColumnModel().getColumn(8).setPreferredWidth(80); // Arrival
+		ticketTable.getColumnModel().getColumn(9).setPreferredWidth(50); // Selected Seats
+		ticketTable.getColumnModel().getColumn(10).setPreferredWidth(80); // Tax
+		ticketTable.getColumnModel().getColumn(11).setPreferredWidth(100); // Price
+		ticketTable.getColumnModel().getColumn(12).setPreferredWidth(100); // Total
 		ticketTable.setFont(new Font("Arial", Font.PLAIN, 14));
 		JTableHeader header = ticketTable.getTableHeader();
 		header.setFont(new Font("Arial", Font.BOLD, 14));
@@ -199,16 +227,16 @@ public class adminSetting extends JFrame {
 		searchButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
 		// Nút chỉnh sửa
-		JButton editButton = new JButton("Chỉnh sửa");
-		editButton.setFont(new Font("Arial", Font.BOLD, 16));
-		editButton.setBackground(new Color(255, 165, 0));
-		editButton.setForeground(Color.WHITE);
-		editButton.setFocusPainted(false);
-		editButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+//		JButton editButton = new JButton("Chỉnh sửa");
+//		editButton.setFont(new Font("Arial", Font.BOLD, 16));
+//		editButton.setBackground(new Color(255, 165, 0));
+//		editButton.setForeground(Color.WHITE);
+//		editButton.setFocusPainted(false);
+//		editButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(searchButton);
-		buttonPanel.add(editButton);
+//		buttonPanel.add(editButton);
 		buttonPanel.setBackground(Color.WHITE);
 		mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -216,33 +244,47 @@ public class adminSetting extends JFrame {
 		searchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Hiển thị hộp thoại để nhập từ khóa tìm kiếm
 				String searchTerm = JOptionPane.showInputDialog(mainPanel, "Nhập tên hoặc SĐT khách hàng:",
 						"Tìm kiếm khách hàng", JOptionPane.PLAIN_MESSAGE);
+
+				// Kiểm tra nếu người dùng không nhập hoặc hủy
 				if (searchTerm == null || searchTerm.trim().isEmpty()) {
 					JOptionPane.showMessageDialog(mainPanel, "Vui lòng nhập thông tin để tìm kiếm!", "Thông báo",
 							JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 
-				// Khôi phục dữ liệu gốc trước khi tìm kiếm
-				tableModel.setRowCount(0); // Xóa tất cả các hàng hiện tại
-				for (Object[] row : originalData) {
-					tableModel.addRow(row); // Thêm lại dữ liệu gốc
-				}
-
-				boolean found = false;
 				// Lọc dữ liệu theo từ khóa
-				for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
-					String name = (String) tableModel.getValueAt(i, 1);
-					String phone = (String) tableModel.getValueAt(i, 7);
+				model.setRowCount(0); // Xóa tất cả các hàng hiện tại trong bảng
+				boolean found = false; // Trạng thái tìm kiếm
+				int stt = 1;
+				// Duyệt qua danh sách vé để tìm kiếm
+				for (TicketCheck t : manager.getMyTicket()) {
+					String name = t.getPassengerName() != null ? t.getPassengerName() : ""; // Xử lý null
+					String phone = t.getPhone() != null ? t.getPhone() : ""; // Xử lý null
 
-					if (!name.toLowerCase().contains(searchTerm.toLowerCase()) && !phone.contains(searchTerm)) {
-						tableModel.removeRow(i); // Xóa dòng không phù hợp
-					} else {
-						found = true;
+					// Kiểm tra nếu tên hoặc số điện thoại chứa từ khóa tìm kiếm
+					if (name.toLowerCase().contains(searchTerm.toLowerCase()) || phone.contains(searchTerm)) {
+						// Thêm hàng vào bảng nếu tìm thấy
+						model.addRow(new Object[] { stt++, t.getFlightcode(), // Mã chuyến bay
+								t.getPassengerName(), // Tên khách hàng
+								t.getId(), // Số CMND/CCCD
+								t.getPhone(), // Số điện thoại
+								t.getDate(), // Ngày bay
+								t.getTime(), // Giờ bay
+								t.getDeparture(), // Điểm đi
+								t.getArrival(), // Điểm đến
+								t.getSelectedSeats(), // Ghế ngồi
+								t.getTax(), // Thuế
+								t.getPrice(), // Giá vé
+								t.getTotal() // Tổng tiền
+						});
+						found = true; // Cập nhật trạng thái tìm thấy
 					}
 				}
 
+				// Hiển thị thông báo nếu không tìm thấy kết quả
 				if (!found) {
 					JOptionPane.showMessageDialog(mainPanel, "Không tìm thấy khách hàng phù hợp!", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -251,71 +293,71 @@ public class adminSetting extends JFrame {
 		});
 
 		// Sự kiện chỉnh sửa thông tin vé
-		editButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int selectedRow = ticketTable.getSelectedRow();
-				if (selectedRow != -1) {
-					// Lấy thông tin dòng đã chọn
-					Object[] rowData = new Object[tableModel.getColumnCount()];
-					for (int i = 0; i < rowData.length; i++) {
-						rowData[i] = tableModel.getValueAt(selectedRow, i);
-					}
-
-					// Mở hộp thoại để chỉnh sửa tất cả thông tin
-					String newFlightCode = JOptionPane.showInputDialog(mainPanel, "Nhập mã chuyến bay:", rowData[0]);
-					if (newFlightCode != null && !newFlightCode.trim().isEmpty()) {
-						tableModel.setValueAt(newFlightCode, selectedRow, 0); // Cập nhật mã chuyến bay
-					}
-
-					String newName = JOptionPane.showInputDialog(mainPanel, "Nhập tên khách hàng:", rowData[1]);
-					if (newName != null && !newName.trim().isEmpty()) {
-						tableModel.setValueAt(newName, selectedRow, 1); // Cập nhật tên khách hàng
-					}
-
-					String newCCCD = JOptionPane.showInputDialog(mainPanel, "Nhập số CCCD:", rowData[2]);
-					if (newCCCD != null && !newCCCD.trim().isEmpty()) {
-						tableModel.setValueAt(newCCCD, selectedRow, 2); // Cập nhật số CCCD
-					}
-
-					String newGender = JOptionPane.showInputDialog(mainPanel, "Nhập giới tính:", rowData[3]);
-					if (newGender != null && !newGender.trim().isEmpty()) {
-						tableModel.setValueAt(newGender, selectedRow, 3); // Cập nhật giới tính
-					}
-
-					String newDeparture = JOptionPane.showInputDialog(mainPanel, "Nhập điểm đi:", rowData[4]);
-					if (newDeparture != null && !newDeparture.trim().isEmpty()) {
-						tableModel.setValueAt(newDeparture, selectedRow, 4); // Cập nhật điểm đi
-					}
-
-					String newArrival = JOptionPane.showInputDialog(mainPanel, "Nhập điểm đến:", rowData[5]);
-					if (newArrival != null && !newArrival.trim().isEmpty()) {
-						tableModel.setValueAt(newArrival, selectedRow, 5); // Cập nhật điểm đến
-					}
-
-					String newDate = JOptionPane.showInputDialog(mainPanel, "Nhập ngày bay:", rowData[6]);
-					if (newDate != null && !newDate.trim().isEmpty()) {
-						tableModel.setValueAt(newDate, selectedRow, 6); // Cập nhật ngày bay
-					}
-
-					String newPhone = JOptionPane.showInputDialog(mainPanel, "Nhập số điện thoại:", rowData[7]);
-					if (newPhone != null && !newPhone.trim().isEmpty()) {
-						tableModel.setValueAt(newPhone, selectedRow, 7); // Cập nhật số điện thoại
-					}
-
-					String newEmail = JOptionPane.showInputDialog(mainPanel, "Nhập email:", rowData[8]);
-					if (newEmail != null && !newEmail.trim().isEmpty()) {
-						tableModel.setValueAt(newEmail, selectedRow, 8); // Cập nhật email
-					}
-
-					// Cập nhật lại dữ liệu gốc
-					originalData.set(selectedRow, rowData);
-				} else {
-					JOptionPane.showMessageDialog(mainPanel, "Vui lòng chọn một vé để chỉnh sửa!", "Thông báo",
-							JOptionPane.WARNING_MESSAGE);
-				}
-			}
-		});
+//		editButton.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				int selectedRow = ticketTable.getSelectedRow();
+//				if (selectedRow != -1) {
+//					// Lấy thông tin dòng đã chọn
+//					Object[] rowData = new Object[tableModel.getColumnCount()];
+//					for (int i = 0; i < rowData.length; i++) {
+//						rowData[i] = tableModel.getValueAt(selectedRow, i);
+//					}
+//
+//					// Mở hộp thoại để chỉnh sửa tất cả thông tin
+//					String newFlightCode = JOptionPane.showInputDialog(mainPanel, "Nhập mã chuyến bay:", rowData[0]);
+//					if (newFlightCode != null && !newFlightCode.trim().isEmpty()) {
+//						tableModel.setValueAt(newFlightCode, selectedRow, 0); // Cập nhật mã chuyến bay
+//					}
+//
+//					String newName = JOptionPane.showInputDialog(mainPanel, "Nhập tên khách hàng:", rowData[1]);
+//					if (newName != null && !newName.trim().isEmpty()) {
+//						tableModel.setValueAt(newName, selectedRow, 1); // Cập nhật tên khách hàng
+//					}
+//
+//					String newCCCD = JOptionPane.showInputDialog(mainPanel, "Nhập số CCCD:", rowData[2]);
+//					if (newCCCD != null && !newCCCD.trim().isEmpty()) {
+//						tableModel.setValueAt(newCCCD, selectedRow, 2); // Cập nhật số CCCD
+//					}
+//
+//					String newGender = JOptionPane.showInputDialog(mainPanel, "Nhập giới tính:", rowData[3]);
+//					if (newGender != null && !newGender.trim().isEmpty()) {
+//						tableModel.setValueAt(newGender, selectedRow, 3); // Cập nhật giới tính
+//					}
+//
+//					String newDeparture = JOptionPane.showInputDialog(mainPanel, "Nhập điểm đi:", rowData[4]);
+//					if (newDeparture != null && !newDeparture.trim().isEmpty()) {
+//						tableModel.setValueAt(newDeparture, selectedRow, 4); // Cập nhật điểm đi
+//					}
+//
+//					String newArrival = JOptionPane.showInputDialog(mainPanel, "Nhập điểm đến:", rowData[5]);
+//					if (newArrival != null && !newArrival.trim().isEmpty()) {
+//						tableModel.setValueAt(newArrival, selectedRow, 5); // Cập nhật điểm đến
+//					}
+//
+//					String newDate = JOptionPane.showInputDialog(mainPanel, "Nhập ngày bay:", rowData[6]);
+//					if (newDate != null && !newDate.trim().isEmpty()) {
+//						tableModel.setValueAt(newDate, selectedRow, 6); // Cập nhật ngày bay
+//					}
+//
+//					String newPhone = JOptionPane.showInputDialog(mainPanel, "Nhập số điện thoại:", rowData[7]);
+//					if (newPhone != null && !newPhone.trim().isEmpty()) {
+//						tableModel.setValueAt(newPhone, selectedRow, 7); // Cập nhật số điện thoại
+//					}
+//
+//					String newEmail = JOptionPane.showInputDialog(mainPanel, "Nhập email:", rowData[8]);
+//					if (newEmail != null && !newEmail.trim().isEmpty()) {
+//						tableModel.setValueAt(newEmail, selectedRow, 8); // Cập nhật email
+//					}
+//
+//					// Cập nhật lại dữ liệu gốc
+//					originalData.set(selectedRow, rowData);
+//				} else {
+//					JOptionPane.showMessageDialog(mainPanel, "Vui lòng chọn một vé để chỉnh sửa!", "Thông báo",
+//							JOptionPane.WARNING_MESSAGE);
+//				}
+//			}
+//		});
 
 		return mainPanel;
 	}
@@ -503,7 +545,12 @@ public class adminSetting extends JFrame {
 		return panelM;
 	}
 
+	public boolean isCellEditable(int row, int column) {
+		return false; // Makes all cells non-editable
+	}
+
 	public JPanel mCustomer() {
+
 		// Tạo panel chính
 		JPanel panel = new JPanel(new BorderLayout());
 
@@ -514,8 +561,12 @@ public class adminSetting extends JFrame {
 
 		// Bảng và mô hình dữ liệu
 		String[] columnNames = { "Số CCCD", "Họ và Tên", "SĐT", "Email", "Giới tính", "Tên Đăng Nhập", "Mật Khẩu" };
-		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0); // Tạo mô hình bảng với tên cột
-
+		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 		try {
 			// Đọc dữ liệu từ file
 			FileReader file = new FileReader("src/data/InfomationUser.txt");
@@ -577,17 +628,29 @@ public class adminSetting extends JFrame {
 							JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-
+				try {
+					manager.loadTicketCheck();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				// Lọc dữ liệu theo từ khóa
 				tableModel.setRowCount(0); // Xóa tất cả các hàng hiện tại
 				boolean found = false;
-				for (Object[] row : originalData) {
-					String name = (String) row[1];
-					String phone = (String) row[2];
+
+				for (saveInfomationUser row : manager.getSaveInfo()) {
+					String name = row.getName();
+					String phone = row.getPhone();
 
 					// Kiểm tra nếu tên hoặc số điện thoại chứa từ khóa tìm kiếm
 					if (name.toLowerCase().contains(searchTerm.toLowerCase()) || phone.contains(searchTerm)) {
-						tableModel.addRow(row);
+						tableModel.addRow(new Object[] { row.getId(), // ID người dùng
+								row.getName(), // Tên người dùng
+								row.getPhone(), // Số điện thoại
+								row.getEmail(), // Email (nếu có)
+								row.getGender(), // Giới tính (nếu có)
+								row.getUserName() // Tên tài khoản
+						});
 						found = true;
 					}
 				}
@@ -609,9 +672,28 @@ public class adminSetting extends JFrame {
 			if (selectedRow != -1) {
 				String newPassword = JOptionPane.showInputDialog(panel, "Nhập mật khẩu mới:");
 				if (newPassword != null && !newPassword.trim().isEmpty()) {
+
+					try {
+						usermanager.LoadUser();
+						manager.loadTicketCheck();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
 					tableModel.setValueAt(newPassword, selectedRow, 6);
 
-					originalData.get(selectedRow)[6] = newPassword; // Cập nhật mật khẩu trong danh sách dữ liệu gốc
+					manager.changePass((String) tableModel.getValueAt(selectedRow, 5), newPassword);
+					usermanager.removePass((String) tableModel.getValueAt(selectedRow, 5), newPassword);
+					System.out.println((String) tableModel.getValueAt(selectedRow, 5));
+
+					try {
+						usermanager.WriteUser();
+						manager.writeInfomationUser();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 
 					// Đảm bảo bảng được làm mới
 					tableModel.fireTableDataChanged(); // Đảm bảo bảng được làm mới

@@ -32,11 +32,6 @@ public class User {
 		this.password = password;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(username, password);
-	}
-
 	public String getId() {
 		return id;
 	}
@@ -78,6 +73,11 @@ public class User {
 	}
 
 	@Override
+	public int hashCode() {
+		return Objects.hash(username);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -86,7 +86,7 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(password, other.password) && Objects.equals(username, other.username);
+		return Objects.equals(username, other.username);
 	}
 
 	@Override

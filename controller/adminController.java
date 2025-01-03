@@ -25,6 +25,7 @@ public class adminController implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+
 		// TODO Auto-generated method stub
 		JButton button = (JButton) e.getSource();
 		if (button == admin.button1 || button == admin.button2 || button == admin.button3 || button == admin.button4) {
@@ -38,7 +39,9 @@ public class adminController implements ActionListener {
 		if (button == admin.button1) {
 			admin.updateTab("Trang chủ", admin.home());
 		} else if (button == admin.button2) {
+
 			admin.updateTab("Quản lý vé", admin.mtickets());
+
 		} else if (button == admin.button3) {
 			admin.updateTab("Quản lý chuyến bay", admin.mPlane());
 		} else if (button == admin.button4) {

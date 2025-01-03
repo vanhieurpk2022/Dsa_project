@@ -25,7 +25,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
+import java.io.IOException;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -571,20 +572,29 @@ public class Demo extends JFrame {
 
 		// Thêm các cột
 		String[] columnNames = { "STT", "Mã vé bay", "Họ và tên", "CCDD", "SĐT", "Ngày Bay", "Thời gian bay",
-				"Sân bay đi", "Sân bay đến", "Số ghế", "Thuế", "giá vé", "Tổng tiền" };
+				"Sân bay đi", "Sân bay đến", "Số ghế", "Thuế", "Giá vé", "Tổng tiền" };
 		for (String columnName : columnNames) {
 			model.addColumn(columnName);
 		}
-		List<TicketCheck> allTickets = TicketManager.getInstance().getAllTickets();
+		try {
+			manager.LoadMyTicket();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		}
+		// Lấy dữ liệu từ TicketManager
+		Set<TicketCheck> allTickets = manager.getGetMyTicket();
+		// load lại dữ liệu
+
 		model.setRowCount(0);
 		int stt = 1;
-		String getFlightCode = savepass.getFlightCode("FlightCode");
+
 		for (TicketCheck ticket : allTickets) {
-			Object[] rowData = { stt++, getFlightCode, ticket.getPassengerName(), ticket.getId(), ticket.getPhone(),
-					ticket.getDate(), ticket.getTime(), ticket.getDeparture(), ticket.getArrival(),
+			Object[] rowData = { stt++, ticket.getFlightcode(), ticket.getPassengerName(), ticket.getId(),
+					ticket.getPhone(), ticket.getDate(), ticket.getTime(), ticket.getDeparture(), ticket.getArrival(),
 					ticket.getSelectedSeats(), ticket.getTax(), ticket.getPrice(), ticket.getTotal() };
 			model.addRow(rowData);
-			getFlightCode = "";
 		}
 
 		// Thiết lập độ rộng cho các cột

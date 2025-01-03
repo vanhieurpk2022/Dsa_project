@@ -1,5 +1,5 @@
 
 admin 	admin
-vanhieurpk123	0969920159
-nobihaza115	0969920159
-minhquoc1	12345678
+vanhieurpk123	12345678
+nobihaza115	123456789
+minhquoc1	0969920159

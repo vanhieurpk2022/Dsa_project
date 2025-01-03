@@ -26,9 +26,9 @@ public class UserManager {
 		this.guest = new LinkedHashSet<User>();
 	}
 
-	public void LoadUser(String fileName) throws IOException {
+	public void LoadUser() throws IOException {
 
-		BufferedReader reader = new BufferedReader(new FileReader(fileName));
+		BufferedReader reader = new BufferedReader(new FileReader("src/data/user.txt"));
 		String str;
 		while ((str = reader.readLine()) != null) {
 			StringTokenizer stringtoker = new StringTokenizer(str, "\t");
@@ -51,8 +51,8 @@ public class UserManager {
 		}
 	}
 
-	public void WriteUser(String fileName) throws IOException {
-		FileWriter fw = new FileWriter(fileName);
+	public void WriteUser() throws IOException {
+		FileWriter fw = new FileWriter("src/data/user.txt");
 		BufferedWriter write = new BufferedWriter(fw);
 		for (User user : guest) {
 			write.write(user.toString());
